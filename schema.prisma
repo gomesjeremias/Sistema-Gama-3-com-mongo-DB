@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  username String @unique
+  password String
+  
+  @@map("users")
+}
+
+model Cliente {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  nome     String
+  email    String?
+  telefone String?
+  status   String // "Pago" ou "A pagar"
+  
+  // Relacionamento com vendas
+  vendas   Venda[]
+  
+  @@map("clientes")
+}
+
+model Produto {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  nome      String
+  codigo    String @unique
+  descricao String?
+  preco     Float
+  estoque   Int
+  
+  // Relacionamento com vendas
+  vendas    Venda[]
+  
+  @@map("produtos")
+}
+
+model Fornecedor {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  nome     String
+  cnpj     String @unique
+  contato  String?
+  produtos String? // Lista de produtos como string
+  
+  @@map("fornecedores")
+}
+
+model Venda {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  quantidade     Int
+  valorTotal     Float
+  formaPagamento String
+  status         String   // "Pago" ou "A pagar"
+  data           DateTime @default(now())
+  
+  // Relacionamentos
+  clienteId      String   @db.ObjectId
+  cliente        Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  
+  produtoId      String   @db.ObjectId
+  produto        Produto  @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  
+  @@map("vendas")
+}
+
