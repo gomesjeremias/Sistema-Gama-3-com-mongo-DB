@@ -5,7 +5,6 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev2": "node --watch server_fixed.js",
     "dev": "npx http-server -p 8000",
     "start": "npx http-server -p 8000",
     "db:generate": "npx prisma generate",
